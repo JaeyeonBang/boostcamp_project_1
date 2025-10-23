@@ -236,9 +236,6 @@
             return text
 
     ```
-
-
-
 - **실험 2.2: 데이터 증강(Data Augmentation) 방식 및 비율 비교** - agent구성이 필요하여 대기
 
   - **목표:** 데이터 불균형 해소 및 일반화 성능 향상을 위한 최적의 증강 전략 탐색.
@@ -263,7 +260,8 @@
   - **변수:**
     1. DAPT 미적용 (Baseline)
     2. 보유한 Train (또는 Train+Test) 데이터의 Unlabeled Corpus를 활용하여 DAPT 선행 학습 진행
-  - **결과:** DAPT 적용 여부(이하 **`Best_DAPT`**)를 결정합니다.
+  - **결과:** Train + test 에 대한 MLM task 10 epoch 진행
+  - -> valid accuracy: 0.8603, test_accuracy: 0.8311
 - **실험 3.2: 손실 함수(Loss Function) 비교**
 
   - **목표:** 클래스 불균형 등 데이터 특성에 맞는 손실 함수 탐색.
@@ -309,9 +307,9 @@
 
 실험의 성패를 판단하기 위한 지표입니다. (태스크에 따라 달라질 수 있음)
 
-- **주요 지표 (Primary):** **Macro F1-Score** (클래스 불균형을 고려한 가장 일반적인 지표)
+- **주요 지표 (Primary):** **Accuracy** (클래스 불균형을 고려한 가장 일반적인 지표)
 - **보조 지표 (Secondary):**
-  - Accuracy
+  - F1
   - Precision, Recall (per-class)
   - Confusion Matrix (오분류 패턴 분석)
 - **비용 지표 (Cost):**
