@@ -236,14 +236,17 @@
             return text
 
     ```
-- **실험 2.2: 데이터 증강(Data Augmentation) 방식 및 비율 비교** - agent구성이 필요하여 대기
+- **실험 2.2: 데이터 증강(Data Augmentation) 방식 및 비율 비교** - agent구성이 필요하여 대기 -> delay
 
   - **목표:** 데이터 불균형 해소 및 일반화 성능 향상을 위한 최적의 증강 전략 탐색.
   - **기준 모델:** `Best_Model` + `Best_Preprocess`
   - **변수 (Methods):**
     1. 적용 안 함 (Baseline)
-    2. Back-Translation (역번역)
-    3. EDA (Easy Data Augmentation: Synonym Replacement, Random Deletion 등)
+    2. 전달 받은 Augment data가 길기가 기므로, 일정 길이 이상의 데이터를 1/2로 나누어 학습 진행-
+       1. 학습 진행중...
+    3. Back-Translation (역번역)
+    4. EDA (Easy Data Augmentation: Synonym Replacement, Random Deletion 등)
+    5.
   - **변수 (Ratios):** 각 Method 별로 원본 대비 증강 데이터 비율 (예: 25%, 50%, 100%)을 테스트합니다.
   - **결과:** 최적의 증강 방식 및 비율(이하 **`Best_Aug`**)을 선정합니다.
 
@@ -260,24 +263,29 @@
   - **변수:**
     1. DAPT 미적용 (Baseline)
     2. 보유한 Train (또는 Train+Test) 데이터의 Unlabeled Corpus를 활용하여 DAPT 선행 학습 진행
+    3. Aug X 2 data + TAPT(type == original)에 대해서 추가적은 MLM task 진행
   - **결과:** Train + test 에 대한 MLM task 10 epoch 진행
-  - -> valid accuracy: 0.8603, test_accuracy: 0.8311
-- **실험 3.2: 손실 함수(Loss Function) 비교**
+    - DAPT: valid accuracy: 0.8603, test_accuracy: 0.8311
+    - Aug X 2 data + TAPT(type == original): 5 + 5 epoch: test_accuracy: 0.8315(살짝 향상)
+- **실험 3.2: 손실 함수(Loss Function) 비교** -> CROSS_ENTROPY로 확정
 
   - **목표:** 클래스 불균형 등 데이터 특성에 맞는 손실 함수 탐색.
   - **기준:** `Best_Model` + `Best_Preprocess` + `Best_Aug` + `Best_DAPT`
   - **변수:**
     1. Cross-Entropy Loss (Baseline)
-    2. **Focal Loss** (불균형 데이터에 유리)
+    2. Focal Loss (불균형 데이터에 유리)
     3. Label Smoothing (모델의 과신(Over-confidence) 방지)
-  - **결과:** 최적의 손실 함수(이하 **`Best_Loss`**)를 선정합니다.
+  - **결과:**
+    - Focal Loss- valid accuracy: 0.8405, test_accuracy: 0.8092
+    - weighted_loss - test_acc : 0.8025
+    - **Label Smoothing -> 성능향상 test_acc: 0.8317 -> 0.8331**
 - **실험 3.3: 파인튜닝(Fine-tuning) 기법 비교**
 
   - **목표:** Full-tuning 대비 PEFT(LoRA)의 성능 및 효율성 비교.
   - **기준:** `Best_Model` + `Best_Preprocess` + `Best_Aug` + `Best_DAPT` + `Best_Loss`
   - **변수:**
     1. **Full Fine-tuning** (Baseline)
-    2. **LoRA (Low-Rank Adaptation)** (Rank, Alpha 등 하이퍼파라미터 튜닝 필요)
+    2. **LoRA (Low-Rank Adaptation)** (Rank, Alpha 등 하이퍼파라미터 튜닝 필요) - LoRA의 실질적인 이득이 크지 않다고 판단, Full fine-tuning 진행
   - **결과:** 성능과 학습/추론 효율을 고려하여 최적의 튜닝 방식(이하 **`Best_Tuning`**)을 결정합니다.
 
 ---
